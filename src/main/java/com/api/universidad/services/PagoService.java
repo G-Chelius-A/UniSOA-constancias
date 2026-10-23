@@ -25,7 +25,7 @@ public class PagoService {
     @Autowired
     IPagoRepository rPago;
 
-    @Autowired 
+    @Autowired
     ISolicitudRepository rSolicitud;
 
     @Autowired
@@ -34,96 +34,83 @@ public class PagoService {
     @Autowired
     NotificacionService sNotificacion;
 
-    @Autowired 
+    @Autowired
     ApplicationEventPublisher eventPublisher;
-
 
     @Transactional
     public Pago registrarPago(Pago pago) {
 
         if (pago.getSolicitud() == null ||
-            pago.getSolicitud().getId() == null) {
+                pago.getSolicitud().getId() == null) {
 
             sNotificacion.enviarNotificacion(
-                "Intento de registrar pago sin solicitud válida",
-                "warn"
-            );
+                    "Intento de registrar pago sin solicitud válida",
+                    "warn");
 
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Se debe indicar una solicitud válida"
-            );
+                    HttpStatus.BAD_REQUEST,
+                    "Se debe indicar una solicitud válida");
         }
 
         if (pago.getMonto() == null ||
-            pago.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
+                pago.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
 
             sNotificacion.enviarNotificacion(
-                "El monto del pago debe ser positivo",
-                "warn"
-            );
+                    "El monto del pago debe ser positivo",
+                    "warn");
 
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "El monto debe ser mayor que cero"
-            );
+                    HttpStatus.BAD_REQUEST,
+                    "El monto debe ser mayor que cero");
         }
 
         if (pago.getTipo() == null ||
-            !esValido(pago.getTipo().toString())) {
+                !esValido(pago.getTipo().toString())) {
 
             sNotificacion.enviarNotificacion(
-                "Se debe indicar un tipo de pago existente",
-                "warn"
-            );
+                    "Se debe indicar un tipo de pago existente",
+                    "warn");
 
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Se debe indicar un tipo de pago existente"
-            );
+                    HttpStatus.BAD_REQUEST,
+                    "Se debe indicar un tipo de pago existente");
         }
 
         // Recuperar la solicitud persistida
         Long idSolicitud = pago.getSolicitud().getId();
 
         Solicitud solicitud = rSolicitud.findById(idSolicitud)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "No se ha encontrado la solicitud con ID: " + idSolicitud
-            ));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se ha encontrado la solicitud con ID: " + idSolicitud));
 
         // Verificar que tenga un costo definido
         if (solicitud.getCosto() == null) {
             sNotificacion.enviarNotificacion(
-                "La solicitud no tiene un costo definido",
-                "error"
-            );
+                    "La solicitud no tiene un costo definido",
+                    "error");
 
             throw new ResponseStatusException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "La solicitud no tiene un costo definido"
-            );
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "La solicitud no tiene un costo definido");
         }
 
         // Validar que el pago no supere el costo total
         if (pago.getMonto().compareTo(solicitud.getCosto()) > 0) {
             sNotificacion.enviarNotificacion(
-                "El monto del pago supera el costo de la solicitud",
-                "warn"
-            );
+                    "El monto del pago supera el costo de la solicitud",
+                    "warn");
 
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "El monto del pago no debe superar el costo de la solicitud"
-            );
+                    HttpStatus.BAD_REQUEST,
+                    "El monto del pago no debe superar el costo de la solicitud");
         }
 
-                if (solicitud.isPagado()) {
-                    sNotificacion.enviarNotificacion("La solicitud ya está pagada", "warn");
+        if (solicitud.isPagado()) {
+            sNotificacion.enviarNotificacion("La solicitud ya está pagada", "warn");
             throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "La solicitud ya está pagada"
-            );
+                    HttpStatus.CONFLICT,
+                    "La solicitud ya está pagada");
         }
 
         // Asociar la entidad completa recuperada de la base de datos
@@ -137,36 +124,31 @@ public class PagoService {
         Pago guardado = rPago.save(pago);
 
         // Comprobar si el total pagado cubre el costo
-        BigDecimal totalPagado =
-            rSolicitud.sumPagosPorSolicitud(idSolicitud);
+        BigDecimal totalPagado = rSolicitud.sumPagosPorSolicitud(idSolicitud);
 
-if (totalPagado != null &&
-    totalPagado.compareTo(solicitud.getCosto()) == 0) {
+        if (totalPagado != null &&
+                totalPagado.compareTo(solicitud.getCosto()) == 0) {
 
-    solicitud.setPagado(true);
-    rSolicitud.save(solicitud);
+            solicitud.setPagado(true);
+            rSolicitud.save(solicitud);
 
-    eventPublisher.publishEvent(
-        new PagoConfirmadoEvent(idSolicitud)
-    );
+            eventPublisher.publishEvent(
+                    new PagoConfirmadoEvent(idSolicitud));
 
-    sNotificacion.guardarNotificacion(
-        new Notificacion(),
-        "info",
-        "Pago completado para la solicitud con ID: "
-            + idSolicitud
-    );
-}
+            sNotificacion.guardarNotificacion(
+                    new Notificacion(),
+                    "info",
+                    "Pago completado para la solicitud con ID: "
+                            + idSolicitud);
+        }
 
         sNotificacion.guardarNotificacion(
-            new Notificacion(),
-            "info",
-            "Pago registrado. ID: " + guardado.getId()
-        );
+                new Notificacion(),
+                "info",
+                "Pago registrado. ID: " + guardado.getId());
 
         return guardado;
     }
-
 
     // Lo ideal es no actualizar ni eliminar pagos, por cuestiones de seguridad y
     // transparencia en la información

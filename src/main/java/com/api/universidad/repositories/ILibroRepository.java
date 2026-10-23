@@ -17,4 +17,9 @@ public interface ILibroRepository extends JpaRepository<Libro, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select libro from Libro libro where libro.id = :id")
     Optional<Libro> findByIdForUpdate(@Param("id") Long id);
+
+    boolean existsByIsbn(String isbn);
+
+    Optional<Libro> findByIsbn(String isbn);
 }
+
