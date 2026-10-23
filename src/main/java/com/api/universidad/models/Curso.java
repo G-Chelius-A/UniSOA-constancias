@@ -35,6 +35,8 @@ public class Curso {
     @JsonIgnoreProperties("curso")
     private List<Inscripcion> inscripciones = new ArrayList<>();
 
+    //Getters, setters y constructores.
+
     public Long getId() {
         return id;
     }

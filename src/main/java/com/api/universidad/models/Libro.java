@@ -31,12 +31,16 @@ public class Libro {
     @Column(name="disponible", nullable=false)
     private Boolean disponible = true;
 
+    //AL crear un libro, se indica que está disponible.
+
     @PrePersist
     public void onCreate() {
         if (disponible == null) {
             disponible = true;
         }
     }
+
+    //Obtener ID y demás
 
     public Long getId() {
         return id;

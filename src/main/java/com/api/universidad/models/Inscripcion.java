@@ -63,6 +63,8 @@ public class Inscripcion {
     @NotNull(message="Debe indicarse un estudiante")
     private Estudiante estudiante;
 
+    //Asignar fecha de creación al crear una inscripción.
+
     @PrePersist 
     public void onCreate(){
         this.fechaCreacion = LocalDateTime.now();
@@ -73,6 +75,8 @@ public class Inscripcion {
             this.completada = false;
         }
     }
+
+    //Getters, setters y constructores.
 
     public Long getId() {
         return id;

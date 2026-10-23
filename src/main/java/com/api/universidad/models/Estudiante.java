@@ -50,7 +50,7 @@ public class Estudiante {
     @JsonIgnoreProperties("estudiante")
     private List<Solicitud> solicitudes = new ArrayList<>();
 
-
+    // Getters, setters y constructores con sobrecarga según se requiera.
     public Long getMatricula() {
         return matricula;
     }
