@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.api.universidad.models.Estudiante;
+import com.api.universidad.models.Inscripcion;
 import com.api.universidad.services.EstudianteService;
+import com.api.universidad.services.InscripcionService;
 
 import jakarta.validation.Valid;
 
@@ -26,6 +28,9 @@ public class EstudianteController {
 
     @Autowired
     private EstudianteService sEstudiante;
+
+    @Autowired
+    private InscripcionService sInscripcion;
 
     @GetMapping
     public ResponseEntity<ArrayList<Estudiante>> obtenerTodos() {
@@ -37,6 +42,11 @@ public class EstudianteController {
         Estudiante estudiante = sEstudiante.obtenerEstudiantePorMatricula(matricula)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se ha encontrado el estudiante con matrícula: " + matricula));
         return ResponseEntity.ok(estudiante);
+    }
+
+    @GetMapping("/{matricula}/calificaciones")
+    public ResponseEntity<ArrayList<Inscripcion>> obtenerCalificaciones(@PathVariable Long matricula) {
+        return ResponseEntity.ok(sInscripcion.obtenerCalificaciones(matricula));
     }
 
     @PostMapping

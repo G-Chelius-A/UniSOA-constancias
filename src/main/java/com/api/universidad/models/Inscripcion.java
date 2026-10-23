@@ -16,6 +16,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 
 @Entity
 @Table(name="inscripciones")
@@ -26,6 +29,9 @@ public class Inscripcion {
     private Long id;
 
     @Column(name="calificacion", precision=3, scale=1)
+    @DecimalMin(value="0.0", message="La calificación debe ser al menos 0.0")
+    @DecimalMax(value="10.0", message="La calificación no puede ser mayor que 10.0")
+    @Digits(integer=2, fraction=1, message="La calificación admite como máximo un decimal")
     private BigDecimal calificacion;
 
     @Column(name="fecha_creacion", nullable=false)
@@ -41,6 +47,9 @@ public class Inscripcion {
 
     @Column(name="activo", nullable=false)
     private Boolean estado = true;
+
+    @Column(name="completada", nullable=false)
+    private Boolean completada;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="id_curso", nullable=false)
@@ -60,6 +69,9 @@ public class Inscripcion {
         if (this.estado == null) {
             this.estado = true;
         }
+        if (this.completada == null) {
+            this.completada = false;
+        }
     }
 
     public Long getId() {
@@ -76,6 +88,14 @@ public class Inscripcion {
 
     public void setCalificacion(BigDecimal calificacion) {
         this.calificacion = calificacion;
+    }
+
+    public Boolean getCompletada() {
+        return completada;
+    }
+
+    public void setCompletada(Boolean completada) {
+        this.completada = completada;
     }
 
     public Boolean isEstado() {

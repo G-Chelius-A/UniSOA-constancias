@@ -13,5 +13,6 @@ public interface IInscripcionRepository extends JpaRepository<Inscripcion, Long>
     boolean existsByEstudiante_MatriculaAndPeriodoAndAnio(Long matricula, Periodo periodo, Integer anio);
     boolean existsByEstudiante_MatriculaAndCurso_IdAndPeriodoAndAnio(Long matricula, Long idCurso, Periodo periodo, Integer anio);
     ArrayList<Inscripcion> findByEstudiante_Matricula(Long matricula);
+    ArrayList<Inscripcion> findByEstudiante_MatriculaAndCompletadaTrueAndCalificacionIsNotNull(Long matricula);
     ArrayList<Inscripcion> findByCurso_Id(Long idCurso);
 }

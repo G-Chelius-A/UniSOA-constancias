@@ -1,6 +1,7 @@
 package com.api.universidad.services;
 
 import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,22 @@ public class InscripcionService {
         return rInscripcion.findByEstudiante_Matricula(matricula);
     }
 
+    public ArrayList<Inscripcion> obtenerCalificaciones(Long matricula) {
+        if (!rEstudiante.existsById(matricula)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "No se ha encontrado el estudiante con matrícula: " + matricula);
+        }
+        return rInscripcion.findByEstudiante_MatriculaAndCompletadaTrueAndCalificacionIsNotNull(matricula);
+    }
+
     public ArrayList<Inscripcion> obtenerPorCurso(Long idCurso) {
         return rInscripcion.findByCurso_Id(idCurso);
     }
 
     @Transactional
     public Inscripcion registrarInscripcion(Inscripcion inscripcion) {
+        validarCalificacion(inscripcion.getCalificacion());
+
         if (inscripcion.getEstudiante() == null || inscripcion.getEstudiante().getMatricula() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe indicarse la matrícula del estudiante");
         }
@@ -78,7 +89,12 @@ public class InscripcionService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se ha encontrado la inscripción con ID: " + id));
 
         if (detalles.getCalificacion() != null) {
+            validarCalificacion(detalles.getCalificacion());
             inscripcionExistente.setCalificacion(detalles.getCalificacion());
+        }
+
+        if (detalles.getCompletada() != null) {
+            inscripcionExistente.setCompletada(detalles.getCompletada());
         }
 
         if (detalles.getEstado() != null) {
@@ -106,6 +122,16 @@ public class InscripcionService {
         }
 
         return rInscripcion.save(inscripcionExistente);
+    }
+
+    private void validarCalificacion(BigDecimal calificacion) {
+        if (calificacion != null &&
+                (calificacion.compareTo(BigDecimal.ZERO) < 0 ||
+                 calificacion.compareTo(BigDecimal.TEN) > 0 ||
+                 calificacion.scale() > 1)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "La calificación debe estar entre 0.0 y 10.0 con máximo un decimal");
+        }
     }
 
     @Transactional
