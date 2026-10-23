@@ -305,7 +305,8 @@ Prefijo base: `http://localhost:6767`
   "curso": { "id": 1 },
   "periodo": "ENE_JUN",
   "anio": 2026,
-  "calificacion": 10
+  "calificacion": 10,
+  "completada": true,
 }
 ```
 
@@ -318,7 +319,7 @@ Prefijo base: `http://localhost:6767`
   "periodo": "ENE_JUN",
   "anio": 2026,
   "estado": true,
-  "completada": false,
+  "completada": true,
   "curso": {
     "id": 1,
     "nombre": "Arquitectura Orientada a Servicios"
