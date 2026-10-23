@@ -13,6 +13,12 @@ Desarrollada con **Spring Boot 4**, **Spring Data JPA** y **MySQL**.
 
 ---
 
+## Diagrama de base de datos
+
+![DIAGRAMA](DIAGRAMA.png)
+
+---
+
 ## Tecnologías utilizadas
 
 | Tecnología | Versión | Rol |
