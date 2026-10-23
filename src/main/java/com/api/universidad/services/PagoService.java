@@ -121,9 +121,13 @@ public class PagoService {
             pago.setFecha(LocalDateTime.now());
         }
 
+        // Persistir el abono o pago unitario
         Pago guardado = rPago.save(pago);
 
-        // Comprobar si el total pagado cubre el costo
+        // LÓGICA CLAVE: Comprobar si con este nuevo abono el total acumulado cubre
+        // exactamente el costo estipulado de la solicitud.
+        // Si es así, se marca la solicitud como pagada y se publica el evento
+        // para que los servicios desacoplados generen y envíen la constancia.
         BigDecimal totalPagado = rSolicitud.sumPagosPorSolicitud(idSolicitud);
 
         if (totalPagado != null &&
@@ -132,6 +136,7 @@ public class PagoService {
             solicitud.setPagado(true);
             rSolicitud.save(solicitud);
 
+            // Publicación del evento hacia el listener asíncrono (ConstanciaEventListener)
             eventPublisher.publishEvent(
                     new PagoConfirmadoEvent(idSolicitud));
 

@@ -50,10 +50,13 @@ public class PrestamoService {
                 "No se encontró el estudiante con matrícula: " + matricula));
 
         Long idLibro = prestamo.getLibro().getId();
+        // Concurrencia crítica: se bloquea la fila del libro (SELECT ... FOR UPDATE)
+        // para garantizar que dos solicitudes simultáneas no presten el mismo ejemplar
         Libro libro = rLibro.findByIdForUpdate(idLibro)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "No se encontró el libro con ID: " + idLibro));
 
+        // Validación de disponibilidad
         if (!libro.getDisponible()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                 "El libro no está disponible para préstamo");
@@ -65,6 +68,7 @@ public class PrestamoService {
         prestamo.setFechaPrestamo(LocalDateTime.now());
         prestamo.setFechaDevolucion(null);
         prestamo.setEstado(EstadoPrestamo.PRESTADO);
+        // Actualizar disponibilidad del ejemplar a no disponible
         libro.setDisponible(false);
 
         rLibro.save(libro);
@@ -83,6 +87,7 @@ public class PrestamoService {
         }
 
         Long idLibro = prestamo.getLibro().getId();
+        // Bloqueo pesimista para evitar estados inconsistentes durante la devolución
         Libro libro = rLibro.findByIdForUpdate(idLibro)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "No se encontró el libro con ID: " + idLibro));
@@ -90,10 +95,13 @@ public class PrestamoService {
         LocalDateTime fechaDevolucion = LocalDateTime.now();
         prestamo.setFechaDevolucion(fechaDevolucion);
         prestamo.setEstado(EstadoPrestamo.DEVUELTO);
+        // El libro vuelve a estar disponible para nuevos préstamos
         libro.setDisponible(true);
 
         rLibro.save(libro);
         Prestamo guardado = rPrestamo.save(prestamo);
+
+        // Notificar evento de devolución a otros componentes interesados
         eventPublisher.publishEvent(new LibroDevuelto(
             guardado.getId(),
             libro.getId(),

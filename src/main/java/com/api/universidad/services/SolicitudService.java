@@ -33,6 +33,7 @@ public class SolicitudService {
     @Transactional
     public Solicitud registrarSolicitud(Solicitud solicitud) {
 
+        // 1. Validaciones de presencia obligatoria de campos base
         if (solicitud.getEstudiante() == null) {
             sNotificacion.enviarNotificacion("Debe existir un estudiante en la solicitud.", "warn");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe existir un estudiante");
@@ -48,6 +49,8 @@ public class SolicitudService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe existir un año");
         }
 
+        // 2. Regla de negocio SOA: El estudiante no puede pedir constancia de un ciclo
+        // en el que no estuvo inscrito a ningún curso
         if (!sPeriodo.verificarPeriodo(solicitud.getEstudiante().getMatricula(), solicitud.getPeriodo(),
                 solicitud.getAnio())) {
             sNotificacion.enviarNotificacion(
@@ -56,7 +59,7 @@ public class SolicitudService {
                     "El estudiante debe tener al menos un curso en el periodo solicitado.");
         }
 
-        // Evitar duplicidad
+        // 3. Control de concurrencia e idempotencia: evitar solicitudes duplicadas para el mismo ciclo
         if (rSolicitud.existsByEstudiante_MatriculaAndPeriodoAndAnio(solicitud.getEstudiante().getMatricula(),
                 solicitud.getPeriodo(), solicitud.getAnio())) {
             sNotificacion.enviarNotificacion("Ya existe una solicitud para ese periodo", "warn");
@@ -77,19 +80,24 @@ public class SolicitudService {
                             "No se ha encontrado una solicitud con el ID " + id);
                 });
 
+        // Sumar todos los abonos/pagos asociados a esta solicitud en base de datos
         BigDecimal totalPagado = rSolicitud.sumPagosPorSolicitud(id);
 
+        // Validación estricta de saldo: la suma de pagos debe cubrir exactamente el costo total definido
         if (totalPagado == null || totalPagado.compareTo(solicitudActual.getCosto()) != 0) {
             sNotificacion.enviarNotificacion("No se ha cubierto el monto del pago", "warn");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No se ha cubierto el monto del pago");
         }
 
+        // Marcar estado pagado
         solicitudActual.setPagado(true);
         Solicitud guardado = rSolicitud.save(solicitudActual);
 
         sNotificacion.guardarNotificacion(guardado, "info",
                 "Pagos confirmados en la solicitud con ID: " + guardado.getId());
 
+        // Event-driven: dispara evento de dominio para procesar asíncronamente
+        // la creación del PDF/documento y su posterior envío por correo
         eventPublisher.publishEvent(new PagoConfirmadoEvent(guardado.getId()));
 
         return guardado;
