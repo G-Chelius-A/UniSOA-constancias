@@ -1,7 +1,5 @@
 package com.api.universidad.controllers;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +30,8 @@ public class LibroController {
     public ResponseEntity<?> obtenerTodos(@RequestParam(required = false) String isbn) {
         if (isbn != null && !isbn.isBlank()) {
             Libro libro = sLibro.obtenerLibroPorIsbn(isbn)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se ha encontrado el libro con ISBN: " + isbn));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "No se ha encontrado el libro con ISBN: " + isbn));
             return ResponseEntity.ok(libro);
         }
         return ResponseEntity.ok(sLibro.obtenerLibros());
@@ -41,7 +40,8 @@ public class LibroController {
     @GetMapping("/{id}")
     public ResponseEntity<Libro> obtenerPorId(@PathVariable Long id) {
         Libro libro = sLibro.obtenerLibroPorId(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se ha encontrado el libro con ID: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "No se ha encontrado el libro con ID: " + id));
         return ResponseEntity.ok(libro);
     }
 
