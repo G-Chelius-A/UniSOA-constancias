@@ -13,6 +13,10 @@ import com.api.universidad.repositories.ILibroRepository;
 
 import jakarta.transaction.Transactional;
 
+/*
+    Este es un servicio de entidad para CRUD de libros.
+*/
+
 @Service
 public class LibroService {
 

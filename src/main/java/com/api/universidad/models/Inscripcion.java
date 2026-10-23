@@ -28,6 +28,8 @@ public class Inscripcion {
     @Column(name="id_inscripcion", nullable=false)
     private Long id;
 
+
+    //Se añaden validaciones de calificaciones
     @Column(name="calificacion", precision=3, scale=1)
     @DecimalMin(value="0.0", message="La calificación debe ser al menos 0.0")
     @DecimalMax(value="10.0", message="La calificación no puede ser mayor que 10.0")

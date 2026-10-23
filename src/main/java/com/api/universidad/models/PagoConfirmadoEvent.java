@@ -1,5 +1,7 @@
 package com.api.universidad.models;
 
+
+//Clase que se instancia al momento en que se dispare un Evento.
 public class PagoConfirmadoEvent {
     private final Long idSolicitud;
 

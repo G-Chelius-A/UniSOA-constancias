@@ -18,6 +18,8 @@ public class GenerarConstanciaService {
     @Autowired
     NotificacionService sNotificacion;
 
+    //Valida si la solicitud ya se ha pagado. Sino, arroja un error.
+
     public void validaPrevia(Solicitud solicitud) {
         if (!solicitud.isPagado()) {
             sNotificacion.enviarNotificacion("La solicitud no se ha aprobado por falta de pago", "warn");
@@ -26,6 +28,11 @@ public class GenerarConstanciaService {
         }
     }
 
+    /*
+        Crea la constancia de la solicitud. Si la validación previa falló, se lanza la exepción de esa operación.
+        Si la constancia ya ha sido generada, no se vuelve a crear.
+        Al crear la constancia, guarda el mensaje en la entidad de Notificaciones para mantener un control.
+    */
     @Transactional
     public Solicitud crearConstancia(Long id) {
         Solicitud solicitudActual = rSolicitud.findById(id)

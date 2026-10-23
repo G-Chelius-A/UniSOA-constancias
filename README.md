@@ -138,6 +138,12 @@ El sistema implementa un flujo desacoplado orientado a eventos para el trámite 
    - Ejecuta de forma asíncrona la generación del documento de constancia (`generado=true`) y el envío formal por correo (`enviado=true`).
    - Registra auditoría y trazas de notificación en el historial.
 
+A partir de los servicios que se encuentran en el proyecto, puede observarse el siguiente flujo de mensajes y eventos:
+
+![MENSAJES](MENSAJES.png)
+
+PagoService tiene un EventPublisher que, cuando la suma de los pagos sea igual al costo de la solicitud invocada, disparará un objeto de tipo evento que será escuchado por el suscriptor ConstanciaEventListener. Este trabajará de forma asíncrona con el servicio de Generar Constancias y posteriormente con el envío de correo. Tanto el servicio de pagos como la generación de constancias y el de envíos, darán una retroalimentación al servicio de entidad de solicitud. Este servicio se encargará de guardar los 3 estados en su respectiva base de datos.
+
 ---
 
 ## Endpoints de la API REST

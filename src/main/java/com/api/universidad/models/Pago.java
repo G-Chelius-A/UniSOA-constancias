@@ -46,11 +46,14 @@ public class Pago {
     @NotNull(message="El pago debe corresponder a una solicitud")
     private Solicitud solicitud;
 
+    //Asignar la fecha de creación en este preciso momento.
+
     @PrePersist
     public void onCreate(){
         this.fecha = LocalDateTime.now();
     }
 
+    //Getters, setters y constructores.
     public Long getId() {
         return id;
     }

@@ -14,6 +14,12 @@ import com.api.universidad.repositories.INotificacionRepository;
 
 import jakarta.transaction.Transactional;
 
+
+/*
+    Este servicio se encarga de enviar, guardar y consultar las notificaciones. Las notificaciones las envía por medio de un Logger.
+
+*/
+
 @Service 
 public class NotificacionService {
     @Autowired 

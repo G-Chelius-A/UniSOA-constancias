@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
+//Activar mensajería asíncrona
 @EnableAsync 
 public class UniversidadApplication {
 

@@ -14,6 +14,7 @@ import jakarta.persistence.LockModeType;
 
 @Repository
 public interface ILibroRepository extends JpaRepository<Libro, Long> {
+    //Cuando realiza la consulta, se realizará un bloqueo en toda fila de ese libro para asegurar que ninguna otra transacción lea o modifique el registro.
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select libro from Libro libro where libro.id = :id")
     Optional<Libro> findByIdForUpdate(@Param("id") Long id);

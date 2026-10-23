@@ -32,6 +32,7 @@ public class CursoController {
         return ResponseEntity.ok(sCurso.obtenerCursos());
     }
 
+    //Si no existe el curso, arrojar 404
     @GetMapping("/{id}")
     public ResponseEntity<Curso> obtenerPorId(@PathVariable Long id) {
         Curso curso = sCurso.obtenerCursoPorId(id)

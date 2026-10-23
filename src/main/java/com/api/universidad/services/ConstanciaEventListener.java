@@ -30,6 +30,7 @@ public class ConstanciaEventListener {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void alConfirmarsePago(PagoConfirmadoEvent evento){
+        //Mensaje auxiliar. Se puede borrar o comentarear si es necesario.
         System.out.println("[SUSCRIPTOR] Recibido PagoConfirmadoEvent para solicitud: " + evento.getIdSolicitud());
         try{
             // 1. Invoca el servicio encargado de generar el archivo/cuerpo de la constancia

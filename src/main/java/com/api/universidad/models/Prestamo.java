@@ -50,6 +50,8 @@ public class Prestamo {
     @Column(name="estado", nullable=false, length=20)
     private EstadoPrestamo estado = EstadoPrestamo.PRESTADO;
 
+    // Al crear, la fecha de préstamo será en este instante y el estado del préstamo se actualziará a PRESTADO.
+
     @PrePersist
     public void onCreate() {
         if (fechaPrestamo == null) {
@@ -59,6 +61,8 @@ public class Prestamo {
             estado = EstadoPrestamo.PRESTADO;
         }
     }
+
+    //Getters, setters y constructores.
 
     public Long getId() {
         return id;

@@ -29,15 +29,20 @@ public class Notificacion {
     @Column(name="fecha", nullable=false, updatable=false)
     private LocalDateTime fecha;
 
+    //Se almacena el ID de la solicitud sobre la cual surge esta notificación.
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="id_solicitud", nullable=true)
     @JsonIgnoreProperties("notificaciones")
     private Solicitud solicitud;
 
+    //Asignar la fecha actual apenas se crea la notificación.
     @PrePersist
     public void onCreate(){
         this.fecha = LocalDateTime.now();
     }
+
+    //Constructores, Getters y setters
 
     public Long getId() {
         return id;

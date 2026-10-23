@@ -21,7 +21,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+/*
+    Las solicitudes, en algunas partes de este código también pueden pensarse como Constancias.
+    A fin de cuentas, una Constancia equivale directamente a una Solicitud y viceversa.
 
+*/
 @Entity 
 @Table(name="solicitudes")
 public class Solicitud {

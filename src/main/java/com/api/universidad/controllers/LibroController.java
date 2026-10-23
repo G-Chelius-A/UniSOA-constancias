@@ -26,6 +26,7 @@ public class LibroController {
     @Autowired
     private LibroService sLibro;
 
+    //Get Mapping por isbn. ISBN es distinto a ID en este caso.
     @GetMapping
     public ResponseEntity<?> obtenerTodos(@RequestParam(required = false) String isbn) {
         if (isbn != null && !isbn.isBlank()) {

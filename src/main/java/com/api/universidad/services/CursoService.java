@@ -13,6 +13,10 @@ import com.api.universidad.repositories.ICursoRepository;
 
 import jakarta.transaction.Transactional;
 
+/*
+    Servicio de entidad. Este sólo hace un CRUD básico.
+*/
+
 @Service
 public class CursoService {
 

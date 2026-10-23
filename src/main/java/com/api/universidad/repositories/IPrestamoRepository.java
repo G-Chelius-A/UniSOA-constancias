@@ -14,6 +14,7 @@ import jakarta.persistence.LockModeType;
 
 @Repository
 public interface IPrestamoRepository extends JpaRepository<Prestamo, Long> {
+    //Cuando se ejecuta la consulta, se bloqueará toda la fila para evitar lecturas e inserciones no deseadas.
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select prestamo from Prestamo prestamo where prestamo.id = :id")
     Optional<Prestamo> findByIdForUpdate(@Param("id") Long id);

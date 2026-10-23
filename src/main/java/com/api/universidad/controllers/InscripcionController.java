@@ -28,6 +28,7 @@ public class InscripcionController {
     @Autowired
     private InscripcionService sInscripcion;
 
+    //GetMapping que permite obtener todas las inscripciones en general, por matrícula (alumno o curso)
     @GetMapping
     public ResponseEntity<ArrayList<Inscripcion>> obtenerTodas(
             @RequestParam(required = false) Long matricula,

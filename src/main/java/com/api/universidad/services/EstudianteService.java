@@ -13,6 +13,10 @@ import com.api.universidad.repositories.IEstudianteRepository;
 
 import jakarta.transaction.Transactional;
 
+/*
+    Este sólo hace un CRUD sobre la entidad de Estudiante.
+*/
+
 @Service
 public class EstudianteService {
 

@@ -25,6 +25,8 @@ public class Libro {
     @NotBlank(message="El autor no debe estar vacío")
     private String autor;
 
+    //Por motivos de registro, se maneja el ISBN de forma diferente al Libro, por si también es necesario hacer revistas, ISSN, etc.
+
     @Column(name="isbn", unique=true, length=20)
     private String isbn;
 

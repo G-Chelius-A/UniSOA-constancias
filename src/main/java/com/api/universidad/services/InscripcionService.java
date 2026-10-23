@@ -54,6 +54,8 @@ public class InscripcionService {
         return rInscripcion.findByCurso_Id(idCurso);
     }
 
+    //Se realizan diferentes validaciones para generar una inscripción. Los mensajes indican qué tipo de problemas pudieron haber surgido.
+
     @Transactional
     public Inscripcion registrarInscripcion(Inscripcion inscripcion) {
         validarCalificacion(inscripcion.getCalificacion());
@@ -82,6 +84,8 @@ public class InscripcionService {
 
         return rInscripcion.save(inscripcion);
     }
+
+    //Se actualizan las inscripciones según los nuevos detalles. Realiza diferentes validaciones al igual que en crear inscripción.
 
     @Transactional
     public Inscripcion actualizarInscripcion(Long id, Inscripcion detalles) {
@@ -123,6 +127,8 @@ public class InscripcionService {
 
         return rInscripcion.save(inscripcionExistente);
     }
+
+    //Valida las calificaciones, si tiene sentido de la forma en que se ingresaron.
 
     private void validarCalificacion(BigDecimal calificacion) {
         if (calificacion != null &&
